@@ -17,10 +17,11 @@ const FormBuilderPage = observer(() => {
         <h1 className="text-2xl font-bold text-white mb-8">{vm.form.title}</h1>
 
         <div className="flex flex-col gap-3 mb-6">
-          {vm.form.fields.map((field) => (
+          {vm.form.fields.map((field, index) => (
             <FieldCard
               key={field.id}
               field={field}
+              position={index + 1}
               onRemove={(id) => { void vm.removeField(id) }}
             />
           ))}
