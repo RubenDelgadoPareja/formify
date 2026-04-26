@@ -5,11 +5,24 @@ import { observer } from 'mobx-react-lite'
 import { useViewModel } from '@/core/presentation/hooks/useViewModel'
 import { FieldCard } from '../components/FieldCard'
 import { FormBuilderViewModel } from '../view-models/form-builder.viewmodel'
-import { repository, addFieldUseCase, removeFieldUseCase, moveFieldUseCase } from '../../container'
+import {
+  repository,
+  addFieldUseCase,
+  removeFieldUseCase,
+  moveFieldUseCase,
+  updateFieldUseCase,
+} from '../../container'
 
 const FormBuilderPage = observer(() => {
   const vm = useViewModel(
-    () => new FormBuilderViewModel(repository, addFieldUseCase, removeFieldUseCase, moveFieldUseCase),
+    () =>
+      new FormBuilderViewModel(
+        repository,
+        addFieldUseCase,
+        removeFieldUseCase,
+        moveFieldUseCase,
+        updateFieldUseCase,
+      ),
   )
 
   const sensors = useSensors(useSensor(PointerSensor))
@@ -45,6 +58,7 @@ const FormBuilderPage = observer(() => {
                   field={field}
                   position={index + 1}
                   onRemove={(id) => { void vm.removeField(id) }}
+                  onUpdateLabel={(id, label) => { void vm.updateFieldLabel(id, label) }}
                 />
               ))}
             </div>

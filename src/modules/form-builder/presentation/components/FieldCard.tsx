@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import type { Field } from '../../domain/entities/field.entity'
@@ -6,12 +7,33 @@ interface Props {
   field: Field
   position: number
   onRemove: (fieldId: string) => void
+  onUpdateLabel: (fieldId: string, label: string) => void
 }
 
-export function FieldCard({ field, position, onRemove }: Props) {
+export function FieldCard({ field, position, onRemove, onUpdateLabel }: Props) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [draft, setDraft] = useState(field.label)
+  const inputRef = useRef<HTMLInputElement>(null)
+
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: field.id,
   })
+
+  useEffect(() => {
+    if (isEditing) inputRef.current?.select()
+  }, [isEditing])
+
+  const confirm = () => {
+    const trimmed = draft.trim()
+    if (trimmed && trimmed !== field.label) onUpdateLabel(field.id, trimmed)
+    else setDraft(field.label)
+    setIsEditing(false)
+  }
+
+  const cancel = () => {
+    setDraft(field.label)
+    setIsEditing(false)
+  }
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -26,20 +48,40 @@ export function FieldCard({ field, position, onRemove }: Props) {
         isDragging ? 'border-emerald-500 opacity-50' : 'border-slate-700'
       }`}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-1 min-w-0">
         <button
           {...attributes}
           {...listeners}
-          className="text-slate-500 hover:text-slate-300 cursor-grab active:cursor-grabbing transition-colors"
+          className="text-slate-500 hover:text-slate-300 cursor-grab active:cursor-grabbing transition-colors shrink-0"
           aria-label="Drag to reorder"
         >
           ⠿
         </button>
-        <span className="text-xs font-mono w-5 text-center text-slate-500">{position}</span>
-        <span className="text-white font-medium">{field.label}</span>
+        <span className="text-xs font-mono w-5 text-center text-slate-500 shrink-0">{position}</span>
+
+        {isEditing ? (
+          <input
+            ref={inputRef}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={confirm}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') confirm()
+              if (e.key === 'Escape') cancel()
+            }}
+            className="bg-slate-700 text-white font-medium rounded px-2 py-0.5 outline-none ring-1 ring-emerald-500 w-full"
+          />
+        ) : (
+          <span
+            onClick={() => setIsEditing(true)}
+            className="text-white font-medium cursor-text hover:text-emerald-400 transition-colors truncate"
+          >
+            {field.label}
+          </span>
+        )}
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 shrink-0 ml-3">
         <span className="text-xs font-mono px-2 py-1 bg-slate-700 text-emerald-400 rounded">
           {field.type}
         </span>

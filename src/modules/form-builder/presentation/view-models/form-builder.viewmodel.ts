@@ -6,6 +6,7 @@ import type { FormRepository } from '../../domain/repositories/form.repository'
 import type { AddFieldUseCase } from '../../domain/use-cases/add-field.use-case'
 import type { MoveFieldUseCase } from '../../domain/use-cases/move-field.use-case'
 import type { RemoveFieldUseCase } from '../../domain/use-cases/remove-field.use-case'
+import type { UpdateFieldUseCase } from '../../domain/use-cases/update-field.use-case'
 
 const DEFAULT_FORM_ID = 'default-form'
 
@@ -16,18 +17,21 @@ export class FormBuilderViewModel extends BaseViewModel {
   private readonly addFieldUseCase: AddFieldUseCase
   private readonly removeFieldUseCase: RemoveFieldUseCase
   private readonly moveFieldUseCase: MoveFieldUseCase
+  private readonly updateFieldUseCase: UpdateFieldUseCase
 
   constructor(
     repository: FormRepository,
     addFieldUseCase: AddFieldUseCase,
     removeFieldUseCase: RemoveFieldUseCase,
     moveFieldUseCase: MoveFieldUseCase,
+    updateFieldUseCase: UpdateFieldUseCase,
   ) {
     super()
     this.repository = repository
     this.addFieldUseCase = addFieldUseCase
     this.removeFieldUseCase = removeFieldUseCase
     this.moveFieldUseCase = moveFieldUseCase
+    this.updateFieldUseCase = updateFieldUseCase
     makeObservable(this, { form: observable })
   }
 
@@ -66,6 +70,19 @@ export class FormBuilderViewModel extends BaseViewModel {
   async moveField(fromIndex: number, toIndex: number): Promise<void> {
     if (!this.form) return
     const updated = await this.moveFieldUseCase.execute({ formId: this.form.id, fromIndex, toIndex })
+    runInAction(() => {
+      this.form = updated
+    })
+  }
+
+  async updateFieldLabel(fieldId: string, label: string): Promise<void> {
+    if (!this.form) return
+    const field = this.form.fields.find((f) => f.id === fieldId)
+    if (!field) return
+    const updated = await this.updateFieldUseCase.execute({
+      formId: this.form.id,
+      field: field.update({ label }),
+    })
     runInAction(() => {
       this.form = updated
     })
