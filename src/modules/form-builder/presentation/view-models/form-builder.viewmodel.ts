@@ -4,6 +4,7 @@ import { Field } from '../../domain/entities/field.entity'
 import { Form } from '../../domain/entities/form.entity'
 import type { FormRepository } from '../../domain/repositories/form.repository'
 import type { AddFieldUseCase } from '../../domain/use-cases/add-field.use-case'
+import type { RemoveFieldUseCase } from '../../domain/use-cases/remove-field.use-case'
 
 const DEFAULT_FORM_ID = 'default-form'
 
@@ -12,11 +13,17 @@ export class FormBuilderViewModel extends BaseViewModel {
 
   private readonly repository: FormRepository
   private readonly addFieldUseCase: AddFieldUseCase
+  private readonly removeFieldUseCase: RemoveFieldUseCase
 
-  constructor(repository: FormRepository, addFieldUseCase: AddFieldUseCase) {
+  constructor(
+    repository: FormRepository,
+    addFieldUseCase: AddFieldUseCase,
+    removeFieldUseCase: RemoveFieldUseCase,
+  ) {
     super()
     this.repository = repository
     this.addFieldUseCase = addFieldUseCase
+    this.removeFieldUseCase = removeFieldUseCase
     makeObservable(this, { form: observable })
   }
 
@@ -39,6 +46,14 @@ export class FormBuilderViewModel extends BaseViewModel {
       label: `Field ${this.form.fields.length + 1}`,
     })
     const updated = await this.addFieldUseCase.execute({ formId: this.form.id, field })
+    runInAction(() => {
+      this.form = updated
+    })
+  }
+
+  async removeField(fieldId: string): Promise<void> {
+    if (!this.form) return
+    const updated = await this.removeFieldUseCase.execute({ formId: this.form.id, fieldId })
     runInAction(() => {
       this.form = updated
     })

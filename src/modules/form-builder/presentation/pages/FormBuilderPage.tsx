@@ -2,10 +2,12 @@ import { observer } from 'mobx-react-lite'
 import { useViewModel } from '@/core/presentation/hooks/useViewModel'
 import { FieldCard } from '../components/FieldCard'
 import { FormBuilderViewModel } from '../view-models/form-builder.viewmodel'
-import { repository, addFieldUseCase } from '../../container'
+import { repository, addFieldUseCase, removeFieldUseCase } from '../../container'
 
 const FormBuilderPage = observer(() => {
-  const vm = useViewModel(() => new FormBuilderViewModel(repository, addFieldUseCase))
+  const vm = useViewModel(
+    () => new FormBuilderViewModel(repository, addFieldUseCase, removeFieldUseCase),
+  )
 
   if (!vm.form) return null
 
@@ -16,7 +18,11 @@ const FormBuilderPage = observer(() => {
 
         <div className="flex flex-col gap-3 mb-6">
           {vm.form.fields.map((field) => (
-            <FieldCard key={field.id} field={field} />
+            <FieldCard
+              key={field.id}
+              field={field}
+              onRemove={(id) => { void vm.removeField(id) }}
+            />
           ))}
         </div>
 
