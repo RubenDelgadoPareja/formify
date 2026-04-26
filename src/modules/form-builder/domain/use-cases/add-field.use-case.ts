@@ -8,7 +8,11 @@ export interface AddFieldInput {
 }
 
 export class AddFieldUseCase {
-  constructor(private readonly repository: FormRepository) {}
+  private readonly repository: FormRepository
+
+  constructor(repository: FormRepository) {
+    this.repository = repository
+  }
 
   async execute(input: AddFieldInput): Promise<Form> {
     const form = await this.repository.findById(input.formId)

@@ -7,7 +7,11 @@ export interface RemoveFieldInput {
 }
 
 export class RemoveFieldUseCase {
-  constructor(private readonly repository: FormRepository) {}
+  private readonly repository: FormRepository
+
+  constructor(repository: FormRepository) {
+    this.repository = repository
+  }
 
   async execute(input: RemoveFieldInput): Promise<Form> {
     const form = await this.repository.findById(input.formId)
