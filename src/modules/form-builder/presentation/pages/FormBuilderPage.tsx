@@ -2,10 +2,10 @@ import { DndContext, PointerSensor, closestCenter, useSensor, useSensors } from 
 import type { DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { observer } from 'mobx-react-lite'
+import { useEffect, useRef, useState } from 'react'
 import { useViewModel } from '@/core/presentation/hooks/useViewModel'
 import { FieldCard } from '../components/FieldCard'
 import { FormBuilderViewModel } from '../view-models/form-builder.viewmodel'
-import { useState } from 'react'
 import {
   repository,
   codeGeneratorService,
@@ -14,6 +14,58 @@ import {
   moveFieldUseCase,
   updateFieldUseCase,
 } from '../../container'
+
+function EditableTitle({ title, onConfirm }: { title: string; onConfirm: (value: string) => void }) {
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(title)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    setDraft(title)
+  }, [title])
+
+  useEffect(() => {
+    if (editing) inputRef.current?.select()
+  }, [editing])
+
+  const confirm = () => {
+    const trimmed = draft.trim()
+    if (trimmed && trimmed !== title) onConfirm(trimmed)
+    else setDraft(title)
+    setEditing(false)
+  }
+
+  const cancel = () => {
+    setDraft(title)
+    setEditing(false)
+  }
+
+  if (editing) {
+    return (
+      <input
+        ref={inputRef}
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={confirm}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') confirm()
+          if (e.key === 'Escape') cancel()
+        }}
+        className="text-2xl font-bold bg-slate-800 text-white rounded px-2 py-0.5 outline-none ring-2 ring-emerald-500 mb-8 w-full"
+      />
+    )
+  }
+
+  return (
+    <h1
+      onClick={() => setEditing(true)}
+      className="text-2xl font-bold text-white mb-8 cursor-text hover:text-emerald-400 transition-colors"
+      title="Click to edit"
+    >
+      {title}
+    </h1>
+  )
+}
 
 const FormBuilderPage = observer(() => {
   const vm = useViewModel(
@@ -57,7 +109,10 @@ const FormBuilderPage = observer(() => {
     <div className="min-h-screen bg-slate-900 p-6 grid grid-cols-[440px_1fr] gap-6">
       {/* Left: field builder */}
       <div>
-        <h1 className="text-2xl font-bold text-white mb-8">{vm.form.title}</h1>
+        <EditableTitle
+          title={vm.form.title}
+          onConfirm={(title) => { void vm.updateFormTitle(title) }}
+        />
 
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext

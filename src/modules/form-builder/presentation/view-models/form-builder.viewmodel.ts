@@ -54,6 +54,15 @@ export class FormBuilderViewModel extends BaseViewModel {
     })
   }
 
+  async updateFormTitle(title: string): Promise<void> {
+    if (!this.form) return
+    const updated = new Form({ id: this.form.id, title, fields: [...this.form.fields] })
+    await this.repository.save(updated)
+    runInAction(() => {
+      this.form = updated
+    })
+  }
+
   async addField(): Promise<void> {
     if (!this.form) return
     const field = new Field({
