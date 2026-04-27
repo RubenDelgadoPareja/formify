@@ -83,7 +83,7 @@ export class CodeGeneratorService {
   }
 
   private hasNonAscii(text: string): boolean {
-    return /[^\x00-\x7F]/.test(text)
+    return /[\u0080-\uFFFF]/.test(text)
   }
 
   private zodFieldSchema(field: Field): string {
