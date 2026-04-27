@@ -145,6 +145,9 @@ export class CodeGeneratorService {
     } else if (type === 'select') {
       lines.push(`        <select id="${name}" {...register('${name}')}>`)
       lines.push(`          <option value="">Select an option</option>`)
+      for (const opt of field.options) {
+        lines.push(`          <option value="${opt}">${opt}</option>`)
+      }
       lines.push(`        </select>`)
     } else if (type === 'checkbox') {
       lines.push(`        <input id="${name}" type="checkbox" {...register('${name}')} />`)

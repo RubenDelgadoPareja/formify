@@ -6,6 +6,7 @@ export interface FieldProps {
   label: string
   required?: boolean
   placeholder?: string
+  options?: string[]
 }
 
 export class Field {
@@ -14,6 +15,7 @@ export class Field {
   readonly label: string
   readonly required: boolean
   readonly placeholder: string
+  readonly options: readonly string[]
 
   constructor(props: FieldProps) {
     if (!props.label.trim()) {
@@ -25,12 +27,9 @@ export class Field {
     this.label = props.label.trim()
     this.required = props.required ?? false
     this.placeholder = props.placeholder ?? ''
+    this.options = props.options ?? []
   }
 
-  /**
-   * Returns a new Field with updated properties.
-   * Entities are immutable: any change creates a new instance.
-   */
   update(changes: Partial<Omit<FieldProps, 'id'>>): Field {
     return new Field({
       id: this.id,
@@ -38,6 +37,7 @@ export class Field {
       label: changes.label ?? this.label,
       required: changes.required ?? this.required,
       placeholder: changes.placeholder ?? this.placeholder,
+      options: changes.options ?? [...this.options],
     })
   }
 }

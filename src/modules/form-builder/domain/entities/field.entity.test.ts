@@ -26,6 +26,18 @@ describe('Field entity', () => {
 
       expect(field.required).toBe(false)
       expect(field.placeholder).toBe('')
+      expect(field.options).toEqual([])
+    })
+
+    it('stores provided options', () => {
+      const field = new Field({
+        id: 'field-1',
+        type: 'select',
+        label: 'Size',
+        options: ['Small', 'Medium', 'Large'],
+      })
+
+      expect(field.options).toEqual(['Small', 'Medium', 'Large'])
     })
 
     it('respects provided optional properties', () => {
@@ -106,6 +118,26 @@ describe('Field entity', () => {
       expect(updated.label).toBe('Email')
       expect(updated.required).toBe(true)
       expect(updated.placeholder).toBe('placeholder')
+    })
+
+    it('updates options and preserves other properties', () => {
+      const original = new Field({ id: 'field-1', type: 'select', label: 'Size' })
+      const updated = original.update({ options: ['S', 'M', 'L'] })
+
+      expect(updated.options).toEqual(['S', 'M', 'L'])
+      expect(updated.label).toBe('Size')
+    })
+
+    it('preserves existing options when not updated', () => {
+      const original = new Field({
+        id: 'field-1',
+        type: 'select',
+        label: 'Size',
+        options: ['S', 'M'],
+      })
+      const updated = original.update({ required: true })
+
+      expect(updated.options).toEqual(['S', 'M'])
     })
   })
 })

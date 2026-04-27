@@ -4,6 +4,7 @@ export interface FieldDto {
   label: string
   required: boolean
   placeholder: string
+  options: string[]
 }
 
 export interface FormDto {

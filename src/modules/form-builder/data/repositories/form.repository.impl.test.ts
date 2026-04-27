@@ -83,4 +83,21 @@ describe('FormRepositoryImpl', () => {
     const found = await repo.findById('form-1')
     expect(found?.fields[0]).toBeInstanceOf(Field)
   })
+
+  it('persists and restores select options', async () => {
+    const repo = makeRepo()
+    const field = new Field({ id: 'f-1', type: 'select', label: 'Size', options: ['S', 'M', 'L'] })
+    await repo.save(makeForm('form-1', [field]))
+
+    const found = await repo.findById('form-1')
+    expect(found?.fields[0].options).toEqual(['S', 'M', 'L'])
+  })
+
+  it('defaults options to [] for fields saved without options', async () => {
+    const repo = makeRepo()
+    await repo.save(makeForm('form-1', [makeField('f-1')]))
+
+    const found = await repo.findById('form-1')
+    expect(found?.fields[0].options).toEqual([])
+  })
 })

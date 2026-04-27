@@ -99,6 +99,37 @@ describe('CodeGeneratorService', () => {
       expect(output).toContain('</select>')
     })
 
+    it('generates an option element for each select option', () => {
+      const form = new Form({
+        id: '1',
+        title: 'My Form',
+        fields: [
+          new Field({
+            id: 'f1',
+            type: 'select',
+            label: 'Size',
+            options: ['Small', 'Medium', 'Large'],
+          }),
+        ],
+      })
+      const output = service.generate(form)
+
+      expect(output).toContain('<option value="Small">Small</option>')
+      expect(output).toContain('<option value="Medium">Medium</option>')
+      expect(output).toContain('<option value="Large">Large</option>')
+    })
+
+    it('always includes the default empty option even when options are defined', () => {
+      const form = new Form({
+        id: '1',
+        title: 'My Form',
+        fields: [new Field({ id: 'f1', type: 'select', label: 'Size', options: ['S', 'M'] })],
+      })
+      const output = service.generate(form)
+
+      expect(output).toContain('<option value="">Select an option</option>')
+    })
+
     it('generates checkbox input and uses z.boolean()', () => {
       const form = new Form({
         id: '1',

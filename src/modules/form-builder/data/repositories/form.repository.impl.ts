@@ -14,6 +14,7 @@ function toEntity(dto: FormDto): Form {
         label: f.label,
         required: f.required,
         placeholder: f.placeholder,
+        options: f.options ?? [],
       }),
   )
   return new Form({ id: dto.id, title: dto.title, fields })
@@ -26,6 +27,7 @@ function toDto(form: Form): FormDto {
     label: f.label,
     required: f.required,
     placeholder: f.placeholder,
+    options: [...f.options],
   }))
   return { id: form.id, title: form.title, fields }
 }
