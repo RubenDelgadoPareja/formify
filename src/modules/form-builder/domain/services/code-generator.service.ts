@@ -1,6 +1,8 @@
 import type { Field } from '../entities/field.entity'
 import type { Form } from '../entities/form.entity'
 
+const COMBINING_DIACRITICS = /[\u0300-\u036f]/g
+
 export class CodeGeneratorService {
   generate(form: Form): string {
     const { fields } = form
@@ -11,7 +13,16 @@ export class CodeGeneratorService {
         ? 'const schema = z.object({})'
         : [
             'const schema = z.object({',
-            ...fields.map((f) => `  ${this.labelToFieldName(f.label)}: ${this.zodFieldSchema(f)},`),
+            ...fields.flatMap((f) => {
+              const lines: string[] = []
+              if (this.hasNonAscii(f.label)) {
+                lines.push(
+                  `  // WARNING: "${f.label}" contains non-ASCII characters — verify the generated field name`,
+                )
+              }
+              lines.push(`  ${this.labelToFieldName(f.label)}: ${this.zodFieldSchema(f)},`)
+              return lines
+            }),
             '})',
           ].join('\n')
 
@@ -50,7 +61,8 @@ export class CodeGeneratorService {
   }
 
   labelToFieldName(label: string): string {
-    const words = label.trim().split(/[^a-zA-Z0-9]+/).filter(Boolean)
+    const ascii = label.normalize('NFD').replace(COMBINING_DIACRITICS, '')
+    const words = ascii.trim().split(/[^a-zA-Z0-9]+/).filter(Boolean)
     return words
       .map((word, i) =>
         i === 0
@@ -61,12 +73,17 @@ export class CodeGeneratorService {
   }
 
   toComponentName(title: string): string {
-    return title
+    const ascii = title.normalize('NFD').replace(COMBINING_DIACRITICS, '')
+    return ascii
       .trim()
       .split(/[^a-zA-Z0-9]+/)
       .filter(Boolean)
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join('')
+  }
+
+  private hasNonAscii(text: string): boolean {
+    return /[^\x00-\x7F]/.test(text)
   }
 
   private zodFieldSchema(field: Field): string {
@@ -84,6 +101,29 @@ export class CodeGeneratorService {
       return required
         ? `z.coerce.number({ message: '${label} is required' })`
         : `z.coerce.number().optional()`
+    }
+
+    if (type === 'tel') {
+      const regex = `/^\\+?[\\d\\s\\-()+]+$/`
+      return required
+        ? `z.string().regex(${regex}, 'Invalid phone number').min(1, '${label} is required')`
+        : `z.string().regex(${regex}, 'Invalid phone number').optional()`
+    }
+
+    if (type === 'date') {
+      return required ? `z.coerce.date()` : `z.coerce.date().optional()`
+    }
+
+    if (type === 'url') {
+      return required
+        ? `z.string().url('Invalid URL').min(1, '${label} is required')`
+        : `z.string().url('Invalid URL').optional()`
+    }
+
+    if (type === 'password') {
+      return required
+        ? `z.string().min(8, 'Password must be at least 8 characters')`
+        : `z.string().min(8, 'Password must be at least 8 characters').optional()`
     }
 
     return required
@@ -108,6 +148,8 @@ export class CodeGeneratorService {
       lines.push(`        </select>`)
     } else if (type === 'checkbox') {
       lines.push(`        <input id="${name}" type="checkbox" {...register('${name}')} />`)
+    } else if (type === 'date') {
+      lines.push(`        <input id="${name}" type="date" {...register('${name}')} />`)
     } else {
       lines.push(`        <input id="${name}" type="${type}"${ph} {...register('${name}')} />`)
     }

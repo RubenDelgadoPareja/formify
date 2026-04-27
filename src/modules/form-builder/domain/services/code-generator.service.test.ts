@@ -161,6 +161,113 @@ describe('CodeGeneratorService', () => {
 
       expect(output).toContain('<button type="submit">Submit</button>')
     })
+
+    it('generates phone regex validation for required tel field', () => {
+      const form = new Form({
+        id: '1',
+        title: 'My Form',
+        fields: [new Field({ id: 'f1', type: 'tel', label: 'Phone', required: true })],
+      })
+      const output = service.generate(form)
+
+      expect(output).toContain("phone: z.string().regex(")
+      expect(output).toContain("'Invalid phone number'")
+      expect(output).toContain(".min(1, 'Phone is required')")
+      expect(output).toContain(`<input id="phone" type="tel" {...register('phone')} />`)
+    })
+
+    it('generates optional phone validation for non-required tel field', () => {
+      const form = new Form({
+        id: '1',
+        title: 'My Form',
+        fields: [new Field({ id: 'f1', type: 'tel', label: 'Phone', required: false })],
+      })
+      const output = service.generate(form)
+
+      expect(output).toContain("'Invalid phone number'")
+      expect(output).toContain('.optional()')
+    })
+
+    it('generates z.coerce.date() for required date field', () => {
+      const form = new Form({
+        id: '1',
+        title: 'My Form',
+        fields: [new Field({ id: 'f1', type: 'date', label: 'Birth Date', required: true })],
+      })
+      const output = service.generate(form)
+
+      expect(output).toContain('birthDate: z.coerce.date(),')
+      expect(output).toContain(`<input id="birthDate" type="date" {...register('birthDate')} />`)
+    })
+
+    it('generates z.coerce.date().optional() for non-required date field', () => {
+      const form = new Form({
+        id: '1',
+        title: 'My Form',
+        fields: [new Field({ id: 'f1', type: 'date', label: 'Birth Date', required: false })],
+      })
+      const output = service.generate(form)
+
+      expect(output).toContain('birthDate: z.coerce.date().optional(),')
+    })
+
+    it('does not include placeholder attribute for date input', () => {
+      const form = new Form({
+        id: '1',
+        title: 'My Form',
+        fields: [new Field({ id: 'f1', type: 'date', label: 'Birth Date', required: true, placeholder: 'ignored' })],
+      })
+      const output = service.generate(form)
+
+      expect(output).toContain(`<input id="birthDate" type="date" {...register('birthDate')} />`)
+      expect(output).not.toContain('placeholder="ignored"')
+    })
+
+    it('generates url validation for required url field', () => {
+      const form = new Form({
+        id: '1',
+        title: 'My Form',
+        fields: [new Field({ id: 'f1', type: 'url', label: 'Website', required: true })],
+      })
+      const output = service.generate(form)
+
+      expect(output).toContain("website: z.string().url('Invalid URL').min(1, 'Website is required'),")
+      expect(output).toContain(`<input id="website" type="url" {...register('website')} />`)
+    })
+
+    it('generates optional url validation for non-required url field', () => {
+      const form = new Form({
+        id: '1',
+        title: 'My Form',
+        fields: [new Field({ id: 'f1', type: 'url', label: 'Website', required: false })],
+      })
+      const output = service.generate(form)
+
+      expect(output).toContain("website: z.string().url('Invalid URL').optional(),")
+    })
+
+    it('generates password min length validation for required password field', () => {
+      const form = new Form({
+        id: '1',
+        title: 'My Form',
+        fields: [new Field({ id: 'f1', type: 'password', label: 'Password', required: true })],
+      })
+      const output = service.generate(form)
+
+      expect(output).toContain("password: z.string().min(8, 'Password must be at least 8 characters'),")
+      expect(output).toContain(`<input id="password" type="password" {...register('password')} />`)
+    })
+
+    it('generates optional password validation for non-required password field', () => {
+      const form = new Form({
+        id: '1',
+        title: 'My Form',
+        fields: [new Field({ id: 'f1', type: 'password', label: 'Password', required: false })],
+      })
+      const output = service.generate(form)
+
+      expect(output).toContain("password: z.string().min(8, 'Password must be at least 8 characters').optional(),")
+    })
   })
 
   describe('labelToFieldName', () => {
@@ -184,6 +291,17 @@ describe('CodeGeneratorService', () => {
     it('lowercases each word beyond the first', () => {
       expect(service.labelToFieldName('FULL NAME')).toBe('fullName')
     })
+
+    it('strips accents from vowels', () => {
+      expect(service.labelToFieldName('Número')).toBe('numero')
+      expect(service.labelToFieldName('Dirección')).toBe('direccion')
+      expect(service.labelToFieldName('Teléfono')).toBe('telefono')
+    })
+
+    it('converts ñ to n', () => {
+      expect(service.labelToFieldName('Año')).toBe('ano')
+      expect(service.labelToFieldName('Número de teléfono')).toBe('numeroDeTelefono')
+    })
   })
 
   describe('toComponentName', () => {
@@ -201,6 +319,62 @@ describe('CodeGeneratorService', () => {
 
     it('lowercases the tail of each word', () => {
       expect(service.toComponentName('MY FORM')).toBe('MyForm')
+    })
+
+    it('strips accents from form title', () => {
+      expect(service.toComponentName('Formulario de Contacto')).toBe('FormularioDeContacto')
+    })
+  })
+
+  describe('non-ASCII warning', () => {
+    it('adds a WARNING comment in the schema for a field with accented label', () => {
+      const form = new Form({
+        id: '1',
+        title: 'My Form',
+        fields: [new Field({ id: 'f1', type: 'text', label: 'Número', required: true })],
+      })
+      const output = service.generate(form)
+
+      expect(output).toContain('// WARNING: "Número" contains non-ASCII characters')
+      expect(output).toContain('numero: z.string().min(1,')
+    })
+
+    it('adds a WARNING comment for labels containing ñ', () => {
+      const form = new Form({
+        id: '1',
+        title: 'My Form',
+        fields: [new Field({ id: 'f1', type: 'text', label: 'Año', required: false })],
+      })
+      const output = service.generate(form)
+
+      expect(output).toContain('// WARNING: "Año" contains non-ASCII characters')
+    })
+
+    it('does not add a WARNING comment for pure ASCII labels', () => {
+      const form = new Form({
+        id: '1',
+        title: 'My Form',
+        fields: [new Field({ id: 'f1', type: 'text', label: 'Full Name', required: true })],
+      })
+      const output = service.generate(form)
+
+      expect(output).not.toContain('// WARNING')
+    })
+
+    it('only warns on the affected field, not on others', () => {
+      const form = new Form({
+        id: '1',
+        title: 'My Form',
+        fields: [
+          new Field({ id: 'f1', type: 'text', label: 'Name', required: true }),
+          new Field({ id: 'f2', type: 'text', label: 'Dirección', required: true }),
+        ],
+      })
+      const output = service.generate(form)
+
+      const warnings = (output.match(/\/\/ WARNING/g) ?? []).length
+      expect(warnings).toBe(1)
+      expect(output).toContain('// WARNING: "Dirección"')
     })
   })
 })
