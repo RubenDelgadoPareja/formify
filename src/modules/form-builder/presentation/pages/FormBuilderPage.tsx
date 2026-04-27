@@ -5,8 +5,10 @@ import { observer } from 'mobx-react-lite'
 import { useViewModel } from '@/core/presentation/hooks/useViewModel'
 import { FieldCard } from '../components/FieldCard'
 import { FormBuilderViewModel } from '../view-models/form-builder.viewmodel'
+import { useState } from 'react'
 import {
   repository,
+  codeGeneratorService,
   addFieldUseCase,
   removeFieldUseCase,
   moveFieldUseCase,
@@ -18,12 +20,15 @@ const FormBuilderPage = observer(() => {
     () =>
       new FormBuilderViewModel(
         repository,
+        codeGeneratorService,
         addFieldUseCase,
         removeFieldUseCase,
         moveFieldUseCase,
         updateFieldUseCase,
       ),
   )
+
+  const [copied, setCopied] = useState(false)
 
   const sensors = useSensors(useSensor(PointerSensor))
 
@@ -39,11 +44,19 @@ const FormBuilderPage = observer(() => {
     }
   }
 
+  const handleCopy = () => {
+    void navigator.clipboard.writeText(vm.generatedCode).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
   if (!vm.form) return null
 
   return (
-    <div className="min-h-screen bg-slate-900 px-6 py-10">
-      <div className="mx-auto max-w-2xl">
+    <div className="min-h-screen bg-slate-900 p-6 grid grid-cols-[440px_1fr] gap-6">
+      {/* Left: field builder */}
+      <div>
         <h1 className="text-2xl font-bold text-white mb-8">{vm.form.title}</h1>
 
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -72,6 +85,24 @@ const FormBuilderPage = observer(() => {
           <span>+</span>
           <span>Add field</span>
         </button>
+      </div>
+
+      {/* Right: code preview */}
+      <div className="bg-slate-800 rounded-xl p-5 flex flex-col min-h-0">
+        <div className="flex items-center justify-between mb-4 shrink-0">
+          <span className="text-sm font-semibold text-slate-300 uppercase tracking-wide">
+            Generated code
+          </span>
+          <button
+            onClick={handleCopy}
+            className="px-3 py-1 text-sm font-medium rounded-md bg-slate-700 hover:bg-slate-600 text-slate-200 transition-colors"
+          >
+            {copied ? 'Copied!' : 'Copy'}
+          </button>
+        </div>
+        <pre className="flex-1 overflow-auto text-sm text-slate-100 font-mono leading-relaxed">
+          <code>{vm.generatedCode}</code>
+        </pre>
       </div>
     </div>
   )

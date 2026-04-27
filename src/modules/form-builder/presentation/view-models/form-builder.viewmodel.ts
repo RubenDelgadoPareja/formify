@@ -1,8 +1,9 @@
-import { makeObservable, observable, runInAction } from 'mobx'
+import { computed, makeObservable, observable, runInAction } from 'mobx'
 import { BaseViewModel } from '@/core/presentation/view-models/base/base.viewmodel'
 import { Field } from '../../domain/entities/field.entity'
 import { Form } from '../../domain/entities/form.entity'
 import type { FormRepository } from '../../domain/repositories/form.repository'
+import type { CodeGeneratorService } from '../../domain/services/code-generator.service'
 import type { AddFieldUseCase } from '../../domain/use-cases/add-field.use-case'
 import type { MoveFieldUseCase } from '../../domain/use-cases/move-field.use-case'
 import type { RemoveFieldUseCase } from '../../domain/use-cases/remove-field.use-case'
@@ -14,6 +15,7 @@ export class FormBuilderViewModel extends BaseViewModel {
   form: Form | null = null
 
   private readonly repository: FormRepository
+  private readonly codeGenerator: CodeGeneratorService
   private readonly addFieldUseCase: AddFieldUseCase
   private readonly removeFieldUseCase: RemoveFieldUseCase
   private readonly moveFieldUseCase: MoveFieldUseCase
@@ -21,6 +23,7 @@ export class FormBuilderViewModel extends BaseViewModel {
 
   constructor(
     repository: FormRepository,
+    codeGenerator: CodeGeneratorService,
     addFieldUseCase: AddFieldUseCase,
     removeFieldUseCase: RemoveFieldUseCase,
     moveFieldUseCase: MoveFieldUseCase,
@@ -28,11 +31,16 @@ export class FormBuilderViewModel extends BaseViewModel {
   ) {
     super()
     this.repository = repository
+    this.codeGenerator = codeGenerator
     this.addFieldUseCase = addFieldUseCase
     this.removeFieldUseCase = removeFieldUseCase
     this.moveFieldUseCase = moveFieldUseCase
     this.updateFieldUseCase = updateFieldUseCase
-    makeObservable(this, { form: observable })
+    makeObservable(this, { form: observable, generatedCode: computed })
+  }
+
+  get generatedCode(): string {
+    return this.form ? this.codeGenerator.generate(this.form) : ''
   }
 
   async didMount(): Promise<void> {
