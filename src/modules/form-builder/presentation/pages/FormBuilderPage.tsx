@@ -72,6 +72,7 @@ const FormBuilderPage = observer(() => {
                   position={index + 1}
                   onRemove={(id) => { void vm.removeField(id) }}
                   onUpdateLabel={(id, label) => { void vm.updateFieldLabel(id, label) }}
+                  onUpdateType={(id, type) => { void vm.updateFieldType(id, type) }}
                 />
               ))}
             </div>

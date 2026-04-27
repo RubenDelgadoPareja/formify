@@ -2,15 +2,17 @@ import { useState, useRef, useEffect } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import type { Field } from '../../domain/entities/field.entity'
+import { FIELD_TYPES } from '../../domain/entities/field-type'
 
 interface Props {
   field: Field
   position: number
   onRemove: (fieldId: string) => void
   onUpdateLabel: (fieldId: string, label: string) => void
+  onUpdateType: (fieldId: string, type: Field['type']) => void
 }
 
-export function FieldCard({ field, position, onRemove, onUpdateLabel }: Props) {
+export function FieldCard({ field, position, onRemove, onUpdateLabel, onUpdateType }: Props) {
   const [isEditing, setIsEditing] = useState(false)
   const [draft, setDraft] = useState(field.label)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -82,9 +84,17 @@ export function FieldCard({ field, position, onRemove, onUpdateLabel }: Props) {
       </div>
 
       <div className="flex items-center gap-3 shrink-0 ml-3">
-        <span className="text-xs font-mono px-2 py-1 bg-slate-700 text-emerald-400 rounded">
-          {field.type}
-        </span>
+        <select
+          value={field.type}
+          onChange={(e) => onUpdateType(field.id, e.target.value as Field['type'])}
+          className="text-xs font-mono px-2 py-1 bg-slate-700 text-emerald-400 rounded border-none outline-none cursor-pointer hover:bg-slate-600 transition-colors"
+        >
+          {FIELD_TYPES.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
         <button
           onClick={() => onRemove(field.id)}
           className="text-slate-400 hover:text-red-400 transition-colors"

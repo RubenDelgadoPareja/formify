@@ -95,4 +95,17 @@ export class FormBuilderViewModel extends BaseViewModel {
       this.form = updated
     })
   }
+
+  async updateFieldType(fieldId: string, type: Field['type']): Promise<void> {
+    if (!this.form) return
+    const field = this.form.fields.find((f) => f.id === fieldId)
+    if (!field) return
+    const updated = await this.updateFieldUseCase.execute({
+      formId: this.form.id,
+      field: field.update({ type }),
+    })
+    runInAction(() => {
+      this.form = updated
+    })
+  }
 }

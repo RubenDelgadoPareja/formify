@@ -1,4 +1,14 @@
-export type FieldType = 'text' | 'email' | 'number' | 'textarea' | 'select' | 'checkbox'
+export type FieldType =
+  | 'text'
+  | 'email'
+  | 'number'
+  | 'textarea'
+  | 'select'
+  | 'checkbox'
+  | 'tel'
+  | 'date'
+  | 'url'
+  | 'password'
 
 export const FIELD_TYPES: readonly FieldType[] = [
   'text',
@@ -7,4 +17,8 @@ export const FIELD_TYPES: readonly FieldType[] = [
   'textarea',
   'select',
   'checkbox',
+  'tel',
+  'date',
+  'url',
+  'password',
 ] as const
