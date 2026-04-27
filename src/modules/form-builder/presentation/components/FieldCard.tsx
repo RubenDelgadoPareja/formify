@@ -10,9 +10,10 @@ interface Props {
   onRemove: (fieldId: string) => void
   onUpdateLabel: (fieldId: string, label: string) => void
   onUpdateType: (fieldId: string, type: Field['type']) => void
+  onUpdateRequired: (fieldId: string, required: boolean) => void
 }
 
-export function FieldCard({ field, position, onRemove, onUpdateLabel, onUpdateType }: Props) {
+export function FieldCard({ field, position, onRemove, onUpdateLabel, onUpdateType, onUpdateRequired }: Props) {
   const [isEditing, setIsEditing] = useState(false)
   const [draft, setDraft] = useState(field.label)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -95,6 +96,17 @@ export function FieldCard({ field, position, onRemove, onUpdateLabel, onUpdateTy
             </option>
           ))}
         </select>
+        <button
+          onClick={() => onUpdateRequired(field.id, !field.required)}
+          className={`text-xs font-medium px-2 py-1 rounded transition-colors ${
+            field.required
+              ? 'bg-emerald-500 text-white'
+              : 'bg-slate-700 text-slate-400 hover:text-slate-200'
+          }`}
+          aria-label="Toggle required"
+        >
+          required
+        </button>
         <button
           onClick={() => onRemove(field.id)}
           className="text-slate-400 hover:text-red-400 transition-colors"

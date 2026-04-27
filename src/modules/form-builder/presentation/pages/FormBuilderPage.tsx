@@ -73,6 +73,7 @@ const FormBuilderPage = observer(() => {
                   onRemove={(id) => { void vm.removeField(id) }}
                   onUpdateLabel={(id, label) => { void vm.updateFieldLabel(id, label) }}
                   onUpdateType={(id, type) => { void vm.updateFieldType(id, type) }}
+                  onUpdateRequired={(id, required) => { void vm.updateFieldRequired(id, required) }}
                 />
               ))}
             </div>
