@@ -1,8 +1,14 @@
 import { DndContext, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core'
 import type { DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import hljs from 'highlight.js/lib/core'
+import typescript from 'highlight.js/lib/languages/typescript'
+import xml from 'highlight.js/lib/languages/xml'
 import { observer } from 'mobx-react-lite'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+
+hljs.registerLanguage('typescript', typescript)
+hljs.registerLanguage('xml', xml)
 import { useViewModel } from '@/core/presentation/hooks/useViewModel'
 import { FORM_TEMPLATES } from '../../domain/entities/form-template'
 import type { FormTemplate } from '../../domain/entities/form-template'
@@ -126,6 +132,11 @@ const FormBuilderPage = observer(() => {
 
   const [copied, setCopied] = useState(false)
 
+  const highlightedCode = useMemo(
+    () => hljs.highlight(vm.generatedCode, { language: 'typescript' }).value,
+    [vm.generatedCode],
+  )
+
   const sensors = useSensors(useSensor(PointerSensor))
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -205,8 +216,8 @@ const FormBuilderPage = observer(() => {
             {copied ? 'Copied!' : 'Copy'}
           </button>
         </div>
-        <pre className="flex-1 overflow-auto text-sm text-slate-100 font-mono leading-relaxed">
-          <code>{vm.generatedCode}</code>
+        <pre className="flex-1 overflow-auto text-sm font-mono leading-relaxed bg-slate-700 rounded-lg p-4">
+          <code className="hljs" dangerouslySetInnerHTML={{ __html: highlightedCode }} />
         </pre>
       </div>
     </div>

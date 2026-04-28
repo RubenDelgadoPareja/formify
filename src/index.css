@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+/* Code highlight — custom tokens using the project palette */
+.hljs                          { color: #e2e8f0; }
+.hljs-keyword,
+.hljs-built_in                 { color: #10b981; }  /* emerald-500 */
+.hljs-string,
+.hljs-template-string          { color: #fcd34d; }  /* amber-300 */
+.hljs-comment                  { color: #64748b; font-style: italic; }  /* slate-500 */
+.hljs-title,
+.hljs-title.function_          { color: #93c5fd; }  /* blue-300 */
+.hljs-title.class_             { color: #d8b4fe; }  /* purple-300 */
+.hljs-type,
+.hljs-variable.language_       { color: #d8b4fe; }  /* purple-300 */
+.hljs-number,
+.hljs-literal                  { color: #fb923c; }  /* orange-400 */
+.hljs-attr,
+.hljs-attribute                { color: #7dd3fc; }  /* sky-300 */
+
 *,
 *::before,
 *::after {
