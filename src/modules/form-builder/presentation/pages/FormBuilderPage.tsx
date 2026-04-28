@@ -4,6 +4,8 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useRef, useState } from 'react'
 import { useViewModel } from '@/core/presentation/hooks/useViewModel'
+import { FORM_TEMPLATES } from '../../domain/entities/form-template'
+import type { FormTemplate } from '../../domain/entities/form-template'
 import { FieldCard } from '../components/FieldCard'
 import { FormBuilderViewModel } from '../view-models/form-builder.viewmodel'
 import {
@@ -19,10 +21,6 @@ function EditableTitle({ title, onConfirm }: { title: string; onConfirm: (value:
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(title)
   const inputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    setDraft(title)
-  }, [title])
 
   useEffect(() => {
     if (editing) inputRef.current?.select()
@@ -64,6 +62,27 @@ function EditableTitle({ title, onConfirm }: { title: string; onConfirm: (value:
     >
       {title}
     </h1>
+  )
+}
+
+function TemplatePicker({ onSelect }: { onSelect: (template: FormTemplate) => void }) {
+  return (
+    <div className="flex items-center gap-2 mb-6">
+      <span className="text-xs font-medium text-slate-400 uppercase tracking-wide shrink-0">
+        Templates
+      </span>
+      <div className="flex gap-2 flex-wrap">
+        {FORM_TEMPLATES.map((template) => (
+          <button
+            key={template.id}
+            onClick={() => onSelect(template)}
+            className="px-3 py-1 text-sm font-medium rounded-md bg-slate-700 hover:bg-slate-600 text-slate-200 transition-colors"
+          >
+            {template.name}
+          </button>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -110,9 +129,12 @@ const FormBuilderPage = observer(() => {
       {/* Left: field builder */}
       <div>
         <EditableTitle
+          key={vm.form.title}
           title={vm.form.title}
           onConfirm={(title) => { void vm.updateFormTitle(title) }}
         />
+
+        <TemplatePicker onSelect={(template) => { void vm.loadTemplate(template) }} />
 
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext

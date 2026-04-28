@@ -2,6 +2,7 @@ import { computed, makeObservable, observable, runInAction } from 'mobx'
 import { BaseViewModel } from '@/core/presentation/view-models/base/base.viewmodel'
 import { Field } from '../../domain/entities/field.entity'
 import { Form } from '../../domain/entities/form.entity'
+import type { FormTemplate } from '../../domain/entities/form-template'
 import type { FormRepository } from '../../domain/repositories/form.repository'
 import type { CodeGeneratorService } from '../../domain/services/code-generator.service'
 import type { AddFieldUseCase } from '../../domain/use-cases/add-field.use-case'
@@ -141,6 +142,17 @@ export class FormBuilderViewModel extends BaseViewModel {
     })
     runInAction(() => {
       this.form = updated
+    })
+  }
+
+  async loadTemplate(template: FormTemplate): Promise<void> {
+    const fields = template.fields.map(
+      (props) => new Field({ ...props, id: crypto.randomUUID() }),
+    )
+    const form = new Form({ id: DEFAULT_FORM_ID, title: template.title, fields })
+    await this.repository.save(form)
+    runInAction(() => {
+      this.form = form
     })
   }
 }
