@@ -66,22 +66,47 @@ function EditableTitle({ title, onConfirm }: { title: string; onConfirm: (value:
 }
 
 function TemplatePicker({ onSelect }: { onSelect: (template: FormTemplate) => void }) {
+  const [pending, setPending] = useState<FormTemplate | null>(null)
+
+  const confirm = () => {
+    if (pending) onSelect(pending)
+    setPending(null)
+  }
+
   return (
-    <div className="flex items-center gap-2 mb-6">
+    <div className="flex items-center gap-2 mb-6 min-h-[28px]">
       <span className="text-xs font-medium text-slate-400 uppercase tracking-wide shrink-0">
         Templates
       </span>
-      <div className="flex gap-2 flex-wrap">
-        {FORM_TEMPLATES.map((template) => (
+      {pending ? (
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-300">Replace with {pending.name}?</span>
           <button
-            key={template.id}
-            onClick={() => onSelect(template)}
+            onClick={confirm}
+            className="px-3 py-1 text-sm font-medium rounded-md bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
+          >
+            Confirm
+          </button>
+          <button
+            onClick={() => setPending(null)}
             className="px-3 py-1 text-sm font-medium rounded-md bg-slate-700 hover:bg-slate-600 text-slate-200 transition-colors"
           >
-            {template.name}
+            Cancel
           </button>
-        ))}
-      </div>
+        </div>
+      ) : (
+        <div className="flex gap-2 flex-wrap">
+          {FORM_TEMPLATES.map((template) => (
+            <button
+              key={template.id}
+              onClick={() => setPending(template)}
+              className="px-3 py-1 text-sm font-medium rounded-md bg-slate-700 hover:bg-slate-600 text-slate-200 transition-colors"
+            >
+              {template.name}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
