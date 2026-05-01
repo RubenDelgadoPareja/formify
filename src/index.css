@@ -1,22 +1,50 @@
 @import "tailwindcss";
 
-/* Code highlight — custom tokens using the project palette */
-.hljs                          { color: #e2e8f0; }
-.hljs-keyword,
-.hljs-built_in                 { color: #10b981; }  /* emerald-500 */
-.hljs-string,
-.hljs-template-string          { color: #fcd34d; }  /* amber-300 */
-.hljs-comment                  { color: #64748b; font-style: italic; }  /* slate-500 */
-.hljs-title,
-.hljs-title.function_          { color: #93c5fd; }  /* blue-300 */
-.hljs-title.class_             { color: #d8b4fe; }  /* purple-300 */
-.hljs-type,
-.hljs-variable.language_       { color: #d8b4fe; }  /* purple-300 */
-.hljs-number,
-.hljs-literal                  { color: #fb923c; }  /* orange-400 */
-.hljs-attr,
-.hljs-attribute                { color: #7dd3fc; }  /* sky-300 */
+@theme {
+  /* ── Surfaces ───────────────────────────────────── */
+  --color-cyber-950: #03060c;
+  --color-cyber-900: #07101f;
+  --color-cyber-800: #0b1628;
+  --color-cyber-750: #0f1d33;
+  --color-cyber-700: #12213a;
+  --color-cyber-600: #1a2e4a;
+  --color-cyber-500: #264060;
+  --color-cyber-400: #456080;
+  --color-cyber-300: #6a90b0;
+  --color-cyber-200: #a0c4de;
+  --color-cyber-100: #cce4f6;
+  --color-cyber-50:  #e4f2fc;
 
+  /* ── Neon accents ───────────────────────────────── */
+  --color-neon-cyan:       #00e5ff;
+  --color-neon-cyan-dark:  #00b0c8;
+  --color-neon-pink:       #f43f5e;
+  --color-neon-violet:     #8b5cf6;
+
+  /* ── Typography ─────────────────────────────────── */
+  --font-orbitron:   'Orbitron', sans-serif;
+  --font-grotesk:    'Space Grotesk', sans-serif;
+  --font-jetbrains:  'JetBrains Mono', monospace;
+}
+
+/* ── Syntax highlight — cyber palette ──────────────── */
+.hljs                          { color: #a0c4de; }
+.hljs-keyword,
+.hljs-built_in                 { color: #00e5ff; }
+.hljs-string,
+.hljs-template-string          { color: #fbbf24; }
+.hljs-comment                  { color: #456080; font-style: italic; }
+.hljs-title,
+.hljs-title.function_          { color: #93c5fd; }
+.hljs-title.class_             { color: #c084fc; }
+.hljs-type,
+.hljs-variable.language_       { color: #c084fc; }
+.hljs-number,
+.hljs-literal                  { color: #fb923c; }
+.hljs-attr,
+.hljs-attribute                { color: #67e8f9; }
+
+/* ── Base ───────────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -25,10 +53,32 @@
 
 body {
   margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
   min-height: 100vh;
+}
+
+/* ── Glow effects ───────────────────────────────────── */
+.glow-cyan {
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.45), 0 0 28px rgba(0, 229, 255, 0.12);
+}
+
+.glow-cyan-sm {
+  box-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.55);
+}
+
+/* ── Subtle grid background ─────────────────────────── */
+.cyber-grid {
+  background-image:
+    linear-gradient(rgba(0, 229, 255, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.022) 1px, transparent 1px);
+  background-size: 48px 48px;
 }

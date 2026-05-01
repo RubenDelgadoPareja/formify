@@ -55,7 +55,7 @@ function EditableTitle({ title, onConfirm }: { title: string; onConfirm: (value:
           if (e.key === 'Enter') confirm()
           if (e.key === 'Escape') cancel()
         }}
-        className="text-xl sm:text-2xl font-bold bg-slate-800 text-white rounded px-2 py-0.5 outline-none ring-2 ring-emerald-500 mb-4 sm:mb-8 w-full"
+        className="text-xl sm:text-2xl font-bold font-orbitron bg-cyber-800 text-cyber-100 rounded px-2 py-0.5 outline-none ring-2 ring-neon-cyan mb-4 sm:mb-8 w-full"
       />
     )
   }
@@ -63,7 +63,7 @@ function EditableTitle({ title, onConfirm }: { title: string; onConfirm: (value:
   return (
     <h1
       onClick={() => setEditing(true)}
-      className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-8 cursor-text hover:text-emerald-400 transition-colors"
+      className="text-xl sm:text-2xl font-bold font-orbitron text-cyber-100 mb-4 sm:mb-8 cursor-text hover:text-neon-cyan transition-colors"
       title="Click to edit"
     >
       {title}
@@ -81,21 +81,21 @@ function TemplatePicker({ onSelect }: { onSelect: (template: FormTemplate) => vo
 
   return (
     <div className="flex items-center gap-2 mb-6 min-h-[28px]">
-      <span className="text-xs font-medium text-slate-400 uppercase tracking-wide shrink-0">
+      <span className="text-[10px] font-orbitron font-semibold text-cyber-400 uppercase tracking-widest shrink-0">
         Templates
       </span>
       {pending ? (
         <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-300">Replace with {pending.name}?</span>
+          <span className="text-xs text-cyber-200">Replace with {pending.name}?</span>
           <button
             onClick={confirm}
-            className="px-3 py-1 text-sm font-medium rounded-md bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
+            className="px-3 py-1 text-sm font-semibold rounded bg-neon-cyan hover:bg-neon-cyan-dark text-cyber-950 transition-colors"
           >
             Confirm
           </button>
           <button
             onClick={() => setPending(null)}
-            className="px-3 py-1 text-sm font-medium rounded-md bg-slate-700 hover:bg-slate-600 text-slate-200 transition-colors"
+            className="px-3 py-1 text-sm font-medium rounded border border-cyber-600 bg-cyber-800 hover:border-neon-cyan hover:text-neon-cyan text-cyber-200 transition-colors"
           >
             Cancel
           </button>
@@ -106,7 +106,7 @@ function TemplatePicker({ onSelect }: { onSelect: (template: FormTemplate) => vo
             <button
               key={template.id}
               onClick={() => setPending(template)}
-              className="px-3 py-1 text-sm font-medium rounded-md bg-slate-700 hover:bg-slate-600 text-slate-200 transition-colors"
+              className="px-3 py-1 text-sm font-medium rounded border border-cyber-600 bg-cyber-800 hover:border-neon-cyan hover:text-neon-cyan text-cyber-200 transition-colors"
             >
               {template.name}
             </button>
@@ -162,15 +162,18 @@ const FormBuilderPage = observer(() => {
   if (!vm.form) return null
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col">
+    <div className="min-h-screen bg-cyber-900 cyber-grid flex flex-col">
+      {/* Top neon accent bar */}
+      <div className="h-0.5 bg-neon-cyan glow-cyan shrink-0" />
+
       {/* Tab bar — only visible below lg */}
-      <div className="lg:hidden sticky top-0 z-10 flex bg-slate-800 border-b border-slate-700 shrink-0">
+      <div className="lg:hidden sticky top-0 z-10 flex bg-cyber-800 border-b border-cyber-600 shrink-0">
         <button
           onClick={() => setActiveTab('builder')}
           className={`flex-1 py-3 text-sm font-medium transition-colors ${
             activeTab === 'builder'
-              ? 'text-emerald-400 border-b-2 border-emerald-400'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'text-neon-cyan border-b-2 border-neon-cyan text-glow-cyan'
+              : 'text-cyber-400 hover:text-cyber-200'
           }`}
         >
           Builder
@@ -179,8 +182,8 @@ const FormBuilderPage = observer(() => {
           onClick={() => setActiveTab('code')}
           className={`flex-1 py-3 text-sm font-medium transition-colors ${
             activeTab === 'code'
-              ? 'text-emerald-400 border-b-2 border-emerald-400'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'text-neon-cyan border-b-2 border-neon-cyan text-glow-cyan'
+              : 'text-cyber-400 hover:text-cyber-200'
           }`}
         >
           Generated Code
@@ -223,7 +226,7 @@ const FormBuilderPage = observer(() => {
 
           <button
             onClick={() => { void vm.addField() }}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-neon-cyan hover:bg-neon-cyan-dark text-cyber-950 font-semibold rounded-lg transition-all glow-cyan-sm hover:glow-cyan"
           >
             <span>+</span>
             <span>Add field</span>
@@ -232,20 +235,20 @@ const FormBuilderPage = observer(() => {
 
         {/* Right: code preview */}
         <div
-          className={`${activeTab !== 'code' ? 'hidden lg:flex' : 'flex'} flex-col bg-slate-800 rounded-xl p-4 sm:p-5 mt-6 lg:mt-0 min-h-[60vh] lg:min-h-0 lg:sticky lg:top-6`}
+          className={`${activeTab !== 'code' ? 'hidden lg:flex' : 'flex'} flex-col bg-cyber-800 rounded-xl border border-cyber-600 p-4 sm:p-5 mt-6 lg:mt-0 min-h-[60vh] lg:min-h-0 lg:sticky lg:top-6`}
         >
           <div className="flex items-center justify-between mb-4 shrink-0">
-            <span className="text-sm font-semibold text-slate-300 uppercase tracking-wide">
-              Generated code
+            <span className="text-[10px] font-orbitron font-semibold text-cyber-400 uppercase tracking-widest">
+              Generated Code
             </span>
             <button
               onClick={handleCopy}
-              className="px-3 py-1 text-sm font-medium rounded-md bg-slate-700 hover:bg-slate-600 text-slate-200 transition-colors"
+              className="px-3 py-1 text-sm font-medium rounded border border-cyber-600 bg-cyber-750 hover:border-neon-cyan hover:text-neon-cyan text-cyber-200 transition-colors"
             >
               {copied ? 'Copied!' : 'Copy'}
             </button>
           </div>
-          <pre className="flex-1 overflow-auto text-sm font-mono leading-relaxed bg-slate-700 rounded-lg p-4">
+          <pre className="flex-1 overflow-auto text-sm font-jetbrains leading-relaxed bg-cyber-950 rounded-lg p-4 border border-cyber-600">
             <code className="hljs" dangerouslySetInnerHTML={{ __html: highlightedCode }} />
           </pre>
         </div>

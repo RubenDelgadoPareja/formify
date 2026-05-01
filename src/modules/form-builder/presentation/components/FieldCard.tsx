@@ -70,8 +70,10 @@ export function FieldCard({
     <div
       ref={setNodeRef}
       style={style}
-      className={`bg-slate-800 border rounded-lg transition-colors ${
-        isDragging ? 'border-emerald-500 opacity-50' : 'border-slate-700'
+      className={`bg-cyber-800 border rounded-lg transition-all ${
+        isDragging
+          ? 'border-neon-cyan glow-cyan-sm opacity-50'
+          : 'border-cyber-600 hover:border-cyber-500'
       }`}
     >
       {/* Main row */}
@@ -80,12 +82,14 @@ export function FieldCard({
           <button
             {...attributes}
             {...listeners}
-            className="text-slate-500 hover:text-slate-300 cursor-grab active:cursor-grabbing transition-colors shrink-0 mt-0.5"
+            className="text-cyber-500 hover:text-neon-cyan cursor-grab active:cursor-grabbing transition-colors shrink-0 mt-0.5"
             aria-label="Drag to reorder"
           >
             ⠿
           </button>
-          <span className="text-xs font-mono w-5 text-center text-slate-500 shrink-0">{position}</span>
+          <span className="text-xs font-jetbrains w-5 text-center text-cyber-500 shrink-0">
+            {position}
+          </span>
 
           {isEditing ? (
             <input
@@ -97,12 +101,12 @@ export function FieldCard({
                 if (e.key === 'Enter') confirm()
                 if (e.key === 'Escape') cancel()
               }}
-              className="bg-slate-700 text-white font-medium rounded px-2 py-0.5 outline-none ring-1 ring-emerald-500 w-full"
+              className="bg-cyber-750 text-cyber-100 font-medium rounded px-2 py-0.5 outline-none ring-1 ring-neon-cyan w-full"
             />
           ) : (
             <span
               onClick={() => setIsEditing(true)}
-              className="text-white font-medium cursor-text hover:text-emerald-400 transition-colors truncate"
+              className="text-cyber-100 font-medium cursor-text hover:text-neon-cyan transition-colors truncate"
             >
               {field.label}
             </span>
@@ -113,7 +117,7 @@ export function FieldCard({
           <select
             value={field.type}
             onChange={(e) => onUpdateType(field.id, e.target.value as Field['type'])}
-            className="text-xs font-mono px-2 py-1 bg-slate-700 text-emerald-400 rounded border-none outline-none cursor-pointer hover:bg-slate-600 transition-colors"
+            className="text-xs font-jetbrains px-2 py-1 bg-cyber-700 text-neon-cyan rounded border border-cyber-600 outline-none cursor-pointer hover:border-neon-cyan transition-colors"
           >
             {FIELD_TYPES.map((t) => (
               <option key={t} value={t}>
@@ -125,8 +129,8 @@ export function FieldCard({
             onClick={() => onUpdateRequired(field.id, !field.required)}
             className={`text-xs font-medium px-2 py-1 rounded transition-colors ${
               field.required
-                ? 'bg-emerald-500 text-white'
-                : 'bg-slate-700 text-slate-400 hover:text-slate-200'
+                ? 'bg-neon-cyan text-cyber-950 font-semibold'
+                : 'bg-cyber-700 text-cyber-400 hover:text-cyber-200 border border-cyber-600'
             }`}
             aria-label="Toggle required"
           >
@@ -134,7 +138,7 @@ export function FieldCard({
           </button>
           <button
             onClick={() => onRemove(field.id)}
-            className="text-slate-400 hover:text-red-400 transition-colors"
+            className="text-cyber-400 hover:text-neon-pink transition-colors"
             aria-label="Remove field"
           >
             ✕
@@ -144,16 +148,16 @@ export function FieldCard({
 
       {/* Options row — only for select fields */}
       {field.type === 'select' && (
-        <div className="px-3 sm:px-4 pb-3 pl-11 sm:pl-14 flex flex-wrap items-center gap-2">
+        <div className="px-3 sm:px-4 pb-3 pl-11 sm:pl-14 flex flex-wrap items-center gap-2 border-t border-cyber-700 pt-2">
           {field.options.map((opt) => (
             <span
               key={opt}
-              className="flex items-center gap-1 text-xs px-2 py-1 bg-slate-700 text-slate-200 rounded-full"
+              className="flex items-center gap-1 text-xs px-2 py-1 bg-cyber-750 text-cyber-200 rounded-full border border-cyber-600"
             >
               {opt}
               <button
                 onClick={() => removeOption(opt)}
-                className="text-slate-400 hover:text-red-400 transition-colors leading-none"
+                className="text-cyber-500 hover:text-neon-pink transition-colors leading-none"
                 aria-label={`Remove option ${opt}`}
               >
                 ✕
@@ -169,7 +173,7 @@ export function FieldCard({
             }}
             onBlur={addOption}
             placeholder="Add option..."
-            className="text-xs bg-transparent text-slate-400 placeholder-slate-600 outline-none w-28 border-b border-slate-600 focus:border-emerald-500 pb-0.5 transition-colors"
+            className="text-xs font-jetbrains bg-transparent text-cyber-300 placeholder-cyber-500 outline-none w-28 border-b border-cyber-600 focus:border-neon-cyan pb-0.5 transition-colors"
           />
         </div>
       )}
