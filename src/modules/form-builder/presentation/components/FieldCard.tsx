@@ -75,12 +75,12 @@ export function FieldCard({
       }`}
     >
       {/* Main row */}
-      <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-3 flex-1 min-w-0">
+      <div className="flex items-start justify-between px-3 sm:px-4 py-3 gap-2">
+        <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
           <button
             {...attributes}
             {...listeners}
-            className="text-slate-500 hover:text-slate-300 cursor-grab active:cursor-grabbing transition-colors shrink-0"
+            className="text-slate-500 hover:text-slate-300 cursor-grab active:cursor-grabbing transition-colors shrink-0 mt-0.5"
             aria-label="Drag to reorder"
           >
             ⠿
@@ -109,7 +109,7 @@ export function FieldCard({
           )}
         </div>
 
-        <div className="flex items-center gap-3 shrink-0 ml-3">
+        <div className="flex flex-wrap items-center justify-end gap-2 shrink-0">
           <select
             value={field.type}
             onChange={(e) => onUpdateType(field.id, e.target.value as Field['type'])}
@@ -130,7 +130,7 @@ export function FieldCard({
             }`}
             aria-label="Toggle required"
           >
-            required
+            req
           </button>
           <button
             onClick={() => onRemove(field.id)}
@@ -144,7 +144,7 @@ export function FieldCard({
 
       {/* Options row — only for select fields */}
       {field.type === 'select' && (
-        <div className="px-4 pb-3 pl-14 flex flex-wrap items-center gap-2">
+        <div className="px-3 sm:px-4 pb-3 pl-11 sm:pl-14 flex flex-wrap items-center gap-2">
           {field.options.map((opt) => (
             <span
               key={opt}
