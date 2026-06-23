@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 import FormBuilderPage from '@/modules/form-builder/presentation/pages/FormBuilderPage'
 
 function App() {
@@ -7,6 +8,7 @@ function App() {
       <Routes>
         <Route path="/" element={<FormBuilderPage />} />
       </Routes>
+      <Analytics />
     </BrowserRouter>
   )
 }
